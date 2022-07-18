@@ -1,0 +1,30 @@
+name: Update Hook Test
+
+on:
+  repository_dispatch:
+    types: update-hook
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Update image tag
+      if: ${{ github.event.client_payload.tag }}
+      run: |
+        sed -i -E 's/newTag: .+$/newTag: ${{ github.event.client_payload.tag }}/' test.yaml
+        cat test.yaml
+    - name: Commit
+      uses: stefanzweifel/git-auto-commit-action@v4
+      if: ${{ github.event.client_payload.tag }}
+      with:
+        commit_message: "[CD STUDY] ${{ github.event.client_payload.tag }}"
+        branch: master
+        commit_options: '--no-verify --signoff'
+        repository: .
+        commit_user_name: GitOps Bot
+        commit_user_email: devnjw@gmail.com
+        commit_author: GitOps Bot <devnjw@gmail.com>

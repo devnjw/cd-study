@@ -28,3 +28,20 @@ jobs:
         commit_user_name: GitOps Bot
         commit_user_email: devnjw@gmail.com
         commit_author: GitOps Bot <devnjw@gmail.com>
+
+    - name: Update image tag 2
+      if: ${{ github.event.client_payload.tag }}
+      run: |
+        sed -i -E 's/newTag: .+$/newTag: ${{ github.event.client_payload.tag }}/' test2.yaml
+        cat test2.yaml
+    - name: Commit 2
+      uses: stefanzweifel/git-auto-commit-action@v4
+      if: ${{ github.event.client_payload.tag }}
+      with:
+        commit_message: "[CD STUDY] ${{ github.event.client_payload.tag }}"
+        branch: master
+        commit_options: '--no-verify --signoff'
+        repository: .
+        commit_user_name: GitOps Bot
+        commit_user_email: devnjw@gmail.com
+        commit_author: GitOps Bot <devnjw@gmail.com>
